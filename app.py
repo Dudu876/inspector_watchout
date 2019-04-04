@@ -33,6 +33,7 @@ def insert():
     body = request.get_json()
     body['timestamp'] = datetime.now()
     db.reports.insert_one(body)
+    print('got insert request from {}'.format(request.remote_addr))
     print('inserting {}'.format(str(body)))
     return jsonify({"status": "ok"})
 
