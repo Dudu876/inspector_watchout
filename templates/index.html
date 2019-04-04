@@ -1,11 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Inspector</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <title>Simple Markers</title>
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+            height: 425px;
+        }
+
+        /* Optional: Makes the sample page fill the window. */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
 </head>
 <body>
-<h1>This is a test</h1>
+<div id="map" style="position:relative"></div>
+<script>
+
+    function initMap() {
+        var myLatLng = {lat: -25.363, lng: 131.044};
+
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 4,
+            center: myLatLng
+        });
+
+        var marker = new google.maps.Marker({
+            position: myLatLng,
+            map: map,
+            title: 'Hello World!'
+        });
+
+        map.addListener('click', function(latLngObj) {
+            let lat = latLngObj.latLng.lat();
+            let lng = latLngObj.latLng.lng();
+            marker.setPosition(new google.maps.LatLng(lat,lng));
+        });
+
+    }
+
+    function onReport() {
+        alert("reported");
+    }
+
+    $(document).ready(function () {
+
+        $("#reportBtn").click(function (e) {
+            e.preventDefault();
+            $("#reportBtn").hide();
+            $("#saveOrCancel").show();
+            return true;
+
+        });
+    });
+
+
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjrD75uWNDnBYPwpko9znXMNpOqLsHyMg&callback=initMap">
+</script>
+<div style="display:flex; justify-content:center">
+    <button type="button" id="reportBtn" class="btn btn-primary">דווח פקח/שוטר</button>
+    <div id="saveOrCancel" style="display:none">
+        <button type="button" id="saveBtn" class="btn btn-primary">שמור</button>
+        <button type="button" id="cancelBtn" class="btn btn-primary">בטל</button>
+    </div>
+</div>
+
+<div style="position: absolute; display:none; top: 150px; left: 95px; z-index: 99; border:8px solid #d4d4d4; border-radius: 6px;">
+    <div style="display:flex; flex-flow:column; justify-content:center">
+    <textarea rows="3" cols="20" dir="rtl" placeholder="Write something">
+    </textarea>
+        <button type="button" id="saveReportBtn" class="btn btn-primary">דווח</button>
+    </div>
+</div>
 
 </body>
 </html>
