@@ -24,6 +24,7 @@ def get_all():
     for doc in cursor:
         res.append(dumps(doc))
 
+    print('returning {} inspectors'.format(len(res)))
     return jsonify(res)
 
 
@@ -32,6 +33,7 @@ def insert():
     body = request.get_json()
     body['timestamp'] = datetime.now()
     db.reports.insert_one(body)
+    print('inserting {}'.format(str(body)))
     return jsonify({"status": "ok"})
 
 
