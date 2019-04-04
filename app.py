@@ -1,15 +1,20 @@
 from flask import Flask
 from flask import jsonify
 from flask import request
+from flask import render_template
 from bson.json_util import dumps
 from datetime import datetime
 import pymongo
-import json
 
 app = Flask(__name__)
 
 client = pymongo.MongoClient("mongodb://admin:Aa123456@ds231956.mlab.com:31956/inspector")
 db = client.inspector
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 
 @app.route('/api/get_all', methods=['GET'])
