@@ -22,7 +22,7 @@ def get_all():
     cursor = db.reports.find({})
     res = []
     for doc in cursor:
-        res.append({"lat":doc["lat"],
+        res.append({"lat": doc["lat"],
                     "lon": doc["lon"],
                     "timestamp": doc["timestamp"],
                     "desc": doc["desc"]})
@@ -35,6 +35,8 @@ def get_all():
 def insert():
     body = request.get_json()
     body['timestamp'] = datetime.now()
+    body['lat'] = round(body['lat'], 5)
+    body['lon'] = round(body['lon'], 5)
     db.reports.insert_one(body)
     print('got insert request from {}'.format(request.remote_addr))
     print('inserting {}'.format(str(body)))
