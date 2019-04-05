@@ -13,6 +13,7 @@
         #map {
             height: 600px;
         }
+
         /* Optional: Makes the sample page fill the window. */
         html, body {
             height: 100%;
@@ -24,16 +25,20 @@
 <body>
 <div id="map" style="position:relative"></div>
 <script>
+
     var map;
     var marker;
     var myLatLng;
-    var police;
+    var police = [];
+
     navigator.geolocation.getCurrentPosition(function(position) {
         myLatLng = {lat:position.coords.latitude,lng:position.coords.longitude};
         map.setCenter(myLatLng);
         map.setZoom(16);
     });
+
     function initMap() {
+
         map = new google.maps.Map(document.getElementById('map'), {
             zoom: 4,
             center: myLatLng
@@ -46,6 +51,7 @@
         $("#reportBox").hide();
         marker.setMap(null);
     }
+
     function report(pos, desc) {
         data = {
             "lat": pos.lat,
@@ -58,12 +64,15 @@
             dataType: 'json',
             contentType: 'application/json',
             success: function (data) {
-                $('#target').html(data.msg);
+                getAllPolice();
             },
             data: JSON.stringify(data)
         });
     }
+
     function getAllPolice(){
+        police.forEach((officerMarker)=>officerMarker.setMap(null));
+        police = [];
         $.ajax({
             url: '/api/get_all',
             type: 'get',
@@ -74,65 +83,86 @@
             }
         });
     }
+
     function renderAllPolice(policeArray) {
+
         //var policeArray = [{"id":48,"title":"Helgelandskysten","longitude":"12.63376","latitude":"66.02219"},{"id":46,"title":"Tysfjord","longitude":"16.50279","latitude":"68.03515"},{"id":44,"title":"Sledehunds-ekspedisjon","longitude":"7.53744","latitude":"60.08929"},{"id":43,"title":"Amundsens sydpolferd","longitude":"11.38411","latitude":"62.57481"},{"id":39,"title":"Vikingtokt","longitude":"6.96781","latitude":"60.96335"},{"id":6,"title":"Tungtvann- sabotasjen","longitude":"8.49139","latitude":"59.87111"}];
+
         for(var i = 0; i < policeArray.length; i++) {
             // Current object
             var obj = policeArray[i];
             // Adding a new marker for the object
-            var marker = new google.maps.Marker({
+            let policeMarker = new google.maps.Marker({
                 position: new google.maps.LatLng(obj.lat ,obj.lon),
                 map: map,
                 icon: "http://intrpx.com/etc/cop-sm.png",
                 title: obj.desc// this works, giving the marker a title with the correct title
             });
+
             // Adding a new info window for the object
-            var clicker = addClicker(marker, obj.desc);
+            var clicker = addClicker(policeMarker, obj.desc);
+
+            police.push(policeMarker);
+
         } // end loop
+
+
         // Adding a new click event listener for the object
         function addClicker(marker, content) {
             google.maps.event.addListener(marker, 'click', function() {
+
                 if (infowin) {infowin.close();}
                 infowin = new google.maps.InfoWindow({content: content});
                 infowin.open(map, marker);
             });
         }
     }
+
     $(document).ready(function () {
+
         getAllPolice();
+
         $("#reportBtn").click(function (e) {
             marker = new google.maps.Marker({
                 position: myLatLng,
                 map: map,
                 title: 'Officer!'
             });
+
             map.addListener('click', function(latLngObj) {
                 let lat = latLngObj.latLng.lat();
                 let lng = latLngObj.latLng.lng();
+                myLatLng = {lat:lat,lng:lng};
                 marker.setPosition(new google.maps.LatLng(lat,lng));
             });
+
             e.preventDefault();
             $("#reportBtn").hide();
             $("#saveOrCancel").show();
             $("#pickLocationInfo").show();
             return true;
         });
+
         $("#saveBtn").click(function (e){
             $("#saveOrCancel").hide();
             $("#pickLocationInfo").hide();
             $("#reportBox").show();
             e.preventDefault();
         });
+
         $("#saveReportBtn").click(function (e){
             report(myLatLng, $("#reportDesc").val());
             reset();
             e.preventDefault();
         });
+
         $("#cancelBtn").click(function (e){
             reset();
             e.preventDefault();
         });
+
     });
+
 </script>
 <script
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjrD75uWNDnBYPwpko9znXMNpOqLsHyMg&callback=initMap">
