@@ -11,9 +11,8 @@
         /* Always set the map height explicitly to define the size of the div
          * element that contains the map. */
         #map {
-            height: 425px;
+            height: 600px;
         }
-
         /* Optional: Makes the sample page fill the window. */
         html, body {
             height: 100%;
@@ -25,25 +24,28 @@
 <body>
 <div id="map" style="position:relative"></div>
 <script>
-
     var map;
     var marker;
-    var myLatLng = {lat: -25.363, lng: 131.044};
-
+    var myLatLng;
+    var police;
     navigator.geolocation.getCurrentPosition(function(position) {
         myLatLng = {lat:position.coords.latitude,lng:position.coords.longitude};
         map.setCenter(myLatLng);
         map.setZoom(16);
     });
-
     function initMap() {
-
         map = new google.maps.Map(document.getElementById('map'), {
             zoom: 4,
             center: myLatLng
         });
     }
-
+    function reset() {
+        $("#reportBtn").show();
+        $("#saveOrCancel").hide();
+        $("#pickLocationInfo").hide();
+        $("#reportBox").hide();
+        marker.setMap(null);
+    }
     function report(pos, desc) {
         data = {
             "lat": pos.lat,
@@ -61,53 +63,79 @@
             data: JSON.stringify(data)
         });
     }
-
+    function getAllPolice(){
+        $.ajax({
+            url: '/api/get_all',
+            type: 'get',
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (data) {
+                alert(JSON.stringify(data));
+               renderAllPolice(data);
+            }
+        });
+    }
+    function renderAllPolice(policeArray) {
+        //var policeArray = [{"id":48,"title":"Helgelandskysten","longitude":"12.63376","latitude":"66.02219"},{"id":46,"title":"Tysfjord","longitude":"16.50279","latitude":"68.03515"},{"id":44,"title":"Sledehunds-ekspedisjon","longitude":"7.53744","latitude":"60.08929"},{"id":43,"title":"Amundsens sydpolferd","longitude":"11.38411","latitude":"62.57481"},{"id":39,"title":"Vikingtokt","longitude":"6.96781","latitude":"60.96335"},{"id":6,"title":"Tungtvann- sabotasjen","longitude":"8.49139","latitude":"59.87111"}];
+        for(var i = 0; i < policeArray.length; i++) {
+            // Current object
+            var obj = policeArray[i];
+            // Adding a new marker for the object
+            var marker = new google.maps.Marker({
+                position: new google.maps.LatLng(obj.lat ,obj.lon),
+                map: map,
+                icon: "http://intrpx.com/etc/cop-sm.png",
+                title: obj.desc// this works, giving the marker a title with the correct title
+            });
+            // Adding a new info window for the object
+            var clicker = addClicker(marker, obj.desc);
+        } // end loop
+        // Adding a new click event listener for the object
+        function addClicker(marker, content) {
+            google.maps.event.addListener(marker, 'click', function() {
+                if (infowin) {infowin.close();}
+                infowin = new google.maps.InfoWindow({content: content});
+                infowin.open(map, marker);
+            });
+        }
+    }
     $(document).ready(function () {
-
+        getAllPolice();
         $("#reportBtn").click(function (e) {
             marker = new google.maps.Marker({
                 position: myLatLng,
                 map: map,
                 title: 'Officer!'
             });
-
             map.addListener('click', function(latLngObj) {
                 let lat = latLngObj.latLng.lat();
                 let lng = latLngObj.latLng.lng();
                 marker.setPosition(new google.maps.LatLng(lat,lng));
-                myLatLng = {lat: lat, lng: lng};
             });
-
             e.preventDefault();
             $("#reportBtn").hide();
             $("#saveOrCancel").show();
             $("#pickLocationInfo").show();
             return true;
         });
-
         $("#saveBtn").click(function (e){
             $("#saveOrCancel").hide();
             $("#pickLocationInfo").hide();
             $("#reportBox").show();
             e.preventDefault();
         });
-
         $("#saveReportBtn").click(function (e){
-
             report(myLatLng, $("#reportDesc").val());
-
-            $("#saveOrCancel").show();
-            $("#reportBox").hide();
+            reset();
             e.preventDefault();
         });
-
-
-
+        $("#cancelBtn").click(function (e){
+            reset();
+            e.preventDefault();
+        });
     });
-
-
 </script>
-<script async defer
+<script
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjrD75uWNDnBYPwpko9znXMNpOqLsHyMg&callback=initMap">
 </script>
 
@@ -117,7 +145,7 @@
     </div>
 </div>
 
-<div style="display:flex; justify-content:center">
+<div style="display:flex; justify-content:center; margin:15px">
     <button type="button" id="reportBtn" class="btn btn-primary">דווח פקח/שוטר</button>
     <div id="saveOrCancel" style="display:none">
         <button type="button" id="saveBtn" class="btn btn-primary">שמור</button>
@@ -127,11 +155,10 @@
 
 <div id="reportBox" style="position: absolute; display:none; top: 150px; left: 95px; z-index: 99; border:8px solid #d4d4d4; border-radius: 6px;">
     <div style="display:flex; flex-flow:column; justify-content:center">
-    <textarea id="reportDesc" rows="3" cols="20" dir="rtl" placeholder="תיאור(לא חובה)">
+    <textarea rows="3" cols="20" dir="rtl" placeholder="תיאור(לא חובה)">
     </textarea>
         <button type="button" id="saveReportBtn" class="btn btn-primary">דווח</button>
     </div>
 </div>
-
 </body>
 </html>

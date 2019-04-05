@@ -22,7 +22,10 @@ def get_all():
     cursor = db.reports.find({})
     res = []
     for doc in cursor:
-        res.append(dumps(doc))
+        res.append({"lat":doc["lat"],
+                    "lon": doc["lon"],
+                    "timestamp": doc["timestamp"],
+                    "desc": doc["desc"]})
 
     print('returning {} inspectors'.format(len(res)))
     return jsonify(res)
