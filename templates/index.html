@@ -30,6 +30,7 @@
     var marker;
     var myLatLng;
     var police = [];
+    var infowin;
 
     navigator.geolocation.getCurrentPosition(function(position) {
         myLatLng = {lat:position.coords.latitude,lng:position.coords.longitude};
@@ -112,7 +113,7 @@
         function addClicker(marker, content) {
             google.maps.event.addListener(marker, 'click', function() {
 
-                if (infowin) {infowin.close();}
+                if (infowin != undefined) {infowin.close();}
                 infowin = new google.maps.InfoWindow({content: content});
                 infowin.open(map, marker);
             });
