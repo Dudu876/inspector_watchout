@@ -49,7 +49,7 @@
     function report(pos, desc) {
         data = {
             "lat": pos.lat,
-            "lng": pos.lng,
+            "lon": pos.lng,
             "desc": desc
         };
         $.ajax({
@@ -155,7 +155,7 @@
 
 <div id="reportBox" style="position: absolute; display:none; top: 150px; left: 95px; z-index: 99; border:8px solid #d4d4d4; border-radius: 6px;">
     <div style="display:flex; flex-flow:column; justify-content:center">
-    <textarea rows="3" cols="20" dir="rtl" placeholder="תיאור(לא חובה)">
+    <textarea id="reportDesc" rows="3" cols="20" dir="rtl" placeholder="תיאור(לא חובה)">
     </textarea>
         <button type="button" id="saveReportBtn" class="btn btn-primary">דווח</button>
     </div>
