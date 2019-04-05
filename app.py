@@ -22,12 +22,10 @@ def get_all():
     cursor = db.reports.find({})
     res = []
     for doc in cursor:
-        now = datetime.now()
-        p_timestamp = datetime.timestamp(now)
 
         res.append({"lat": doc["lat"],
                     "lon": doc["lon"],
-                    "timestamp": p_timestamp,
+                    "timestamp": doc["timestamp"],
                     "desc": doc["desc"]})
 
     print('returning {} inspectors'.format(len(res)))
@@ -37,7 +35,9 @@ def get_all():
 @app.route('/api/insert', methods=['POST'])
 def insert():
     body = request.get_json()
-    body['timestamp'] = datetime.now()
+    now = datetime.now()
+    body['timestamp'] = datetime.timestamp(now)
+
     body['lat'] = round(body['lat'], 5)
     body['lon'] = round(body['lon'], 5)
     db.reports.insert_one(body)
