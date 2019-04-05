@@ -24,7 +24,7 @@ def get_all():
     for doc in cursor:
         res.append({"lat": doc["lat"],
                     "lon": doc["lon"],
-                    "timestamp": datetime.timestamp(doc["timestamp"]) * 1000,
+                    "timestamp": doc["timestamp"].timestamp(),
                     "desc": doc["desc"]})
 
     print('returning {} inspectors'.format(len(res)))
