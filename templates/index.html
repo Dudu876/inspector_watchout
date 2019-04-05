@@ -81,12 +81,13 @@
             e.preventDefault();
             $("#reportBtn").hide();
             $("#saveOrCancel").show();
+            $("#pickLocationInfo").show();
             return true;
         });
 
         $("#saveBtn").click(function (e){
-
             $("#saveOrCancel").hide();
+            $("#pickLocationInfo").hide();
             $("#reportBox").show();
             e.preventDefault();
         });
@@ -109,6 +110,13 @@
 <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjrD75uWNDnBYPwpko9znXMNpOqLsHyMg&callback=initMap">
 </script>
+
+<div id="pickLocationInfo" style="position: absolute; display:none; top: 15px; left: 130px; z-index: 99;">
+    <div class="alert alert-info" role="alert">
+        סמן מיקום
+    </div>
+</div>
+
 <div style="display:flex; justify-content:center">
     <button type="button" id="reportBtn" class="btn btn-primary">דווח פקח/שוטר</button>
     <div id="saveOrCancel" style="display:none">
