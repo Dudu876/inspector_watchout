@@ -22,9 +22,12 @@ def get_all():
     cursor = db.reports.find({})
     res = []
     for doc in cursor:
+        now = datetime.now()
+        p_timestamp = datetime.timestamp(now)
+
         res.append({"lat": doc["lat"],
                     "lon": doc["lon"],
-                    "timestamp": doc["timestamp"].timestamp() * 1000,
+                    "timestamp": p_timestamp,
                     "desc": doc["desc"]})
 
     print('returning {} inspectors'.format(len(res)))
